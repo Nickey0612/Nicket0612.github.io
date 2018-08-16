@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="ja">
+    <head>
+        <meta charset="utf-8">
+        <title>geolocation api test</title>
+        <script>
+
+            function addText(_text) {
+                //let text = _text + "</br>";
+                document.getElementById("log").textContent = _text;
+            }
+
+            function start() {
+                if(navigator.geolocation) {
+                    addText("位置情報の取得を開始");
+                    element = document.getElementById("button");
+                    element.textContent = "stop";
+                    element.onclick = new Function("stop()");
+                }else{
+                    addText("この端末では利用できません");
+                }
+            }
+
+            function stop() {
+                element = document.getElementById("button");
+                element.textContent = "start";
+                element.onclick = new Function("start()");
+            }
+        </script>
+    </head>
+    <body>
+        <button type="button" id="button" onclick="start">start</button> | <div id="log"></div>
+        <hr>
+        <div id="
