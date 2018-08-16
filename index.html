@@ -5,30 +5,92 @@
         <title>geolocation api test</title>
         <script>
 
-            function addText(_text) {
+            var id;
+
+            function addMsg(_text) {
                 //let text = _text + "</br>";
-                document.getElementById("log").textContent = _text;
+                document.getElementById("msg").textContent = _text;
             }
 
             function start() {
                 if(navigator.geolocation) {
-                    addText("位置情報の取得を開始");
-                    element = document.getElementById("button");
+                    addMsg("位置情報を取得中");
+                    var element = document.getElementById("button");
+                    var event = function() { stop(); };
                     element.textContent = "stop";
-                    element.onclick = new Function("stop()");
+                    element.onclick = event;
+                    //gpsStart();
                 }else{
-                    addText("この端末では利用できません");
+                    addMsg("この端末では利用できません");
                 }
             }
 
             function stop() {
-                element = document.getElementById("button");
+                var element = document.getElementById("button");
+                var event = function(){ start(); };
                 element.textContent = "start";
-                element.onclick = new Function("start()");
+                element.onclick = event;
+                //gpsStop();
             }
+
+            function gpsStart() {
+                var op1 = document.getElementById("op1").checked;
+                var op2 = Number(document.getElementById("op2").value);
+                var op3 = Number(document.getElementById("op3").value);
+                var option = {
+                    enableHighAccuracy: op1,
+                    maximumAge: op2,
+                    timeout: op3
+                };
+
+                id = navigator.geolocation.watchPosition(
+                    function(position) {
+                        success(position);
+                    },
+                    function(error) {
+                        err(error);
+                    },
+                    option
+                );
+            }
+
+            function gpsStop() {
+                navigator.geolocation.clearWatch(id);
+            }
+
+            function success(position) {
+                var time = position.timestamp;
+                var lat = position.coords.latitude;
+                var lon = position.coords.longitude;
+                var alt = position.coords.altitude;
+                var acc = position.coords.accuracy;
+                var speed = position.coords.speed;
+            }
+
+            function err(error) {
+                var e = "";
+                if(error.code == 1) {
+                    e = "位置情報取得が許可されていません";
+                }
+                if(error.code == 2) {
+                    e = "現在位置を取得出来ません";
+                }
+                if(error.code == 3) {
+                    e = "位置情報取得がタイムアウトしました";
+                }
+
+                addMsg(e);
+            }
+
         </script>
     </head>
     <body>
-        <button type="button" id="button" onclick="start">start</button> | <div id="log"></div>
+        enableHighAccuracy: <input type="checkbox" name="op1"> //より高精度な位置を求める<br>
+        maximumAge: <input type="number" name="op2" style="width:100px;" value=0> // 最後の現在位置情報がこの値以内の場合は再利用(ms)<br>
+        timeout: <input type="number" name="op3" style="width:100px;" value=5000> // この値以内に現在位置情報を取得出来ない場合は処理を終了(ms)<br>
+        <button type="button" id="button" onclick="start">start</button>
+        <textarea id="msg" rows="2"></div>
         <hr>
-        <div id="
+        <textarea id="data">
+    </body>
+</html>
