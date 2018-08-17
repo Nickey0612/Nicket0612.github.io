@@ -3,6 +3,39 @@
     <head>
         <meta charset="utf-8">
         <title>geolocation api test</title>
+        <style>
+            .col {
+                display: inline-block;
+            }
+            .col-1 {
+                width: 180px;
+            }
+            .col-2 {
+                width: 70px;
+            }
+            .col-3 {
+                width: 600px;
+            }
+
+            #button{
+                display: inline-block;
+                padding: 0.5em 1em;
+                margin: 5px;
+                width: 100%;
+                text-decoration: none;
+                background: #668ad8;
+                color: #FFF;
+                border-bottom: solid 4px #627295;
+                border-radius: 3px;
+                font-size: initial;
+            }
+            #button:active {
+                -ms-transform: translateY(4px);
+                -webkit-transform: translateY(4px);
+                transform: translateY(4px);
+                border-bottom: none;
+            }
+        </style>
         <script>
 
             var id;
@@ -61,6 +94,7 @@
 
             function success(position) {
                 var time = position.timestamp;
+                var parseTime = unixTime2ymd(time);
                 var lat = position.coords.latitude;
                 var lon = position.coords.longitude;
                 var alt = position.coords.altitude;
@@ -68,7 +102,7 @@
                 var speed = position.coords.speed;
 
                 var element = document.getElementById("data");
-                element.innerHTML += "time      : " + time + "<br>";
+                element.innerHTML += "time      : " + parseTime + "<br>";
                 element.innerHTML += "latitude  : " + lat + "<br>";
                 element.innerHTML += "longitude : " + lon + "<br>";
                 element.innerHTML += "altitude  : " + alt + "<br>";
@@ -92,14 +126,37 @@
                 addMsg(e);
             }
 
+            function unixTime2ymd(intTime){
+                var d = new Date( intTime);
+                var year  = d.getFullYear();
+                var month = d.getMonth() + 1;
+                var day  = d.getDate();
+                var hour = ( "0" + d.getHours() ).slice(-2);
+                var min  = ( "0" + d.getMinutes() ).slice(-2);
+                var sec   = ( "0" + d.getSeconds() ).slice(-2);
+                return( year + "/" + month + "/" + day + " " + hour + ":" + min + ":" + sec );
+            }
+
         </script>
     </head>
     <body>
         <fieldset>
             <legend>options</legend>
-            enableHighAccuracy  : <input type="checkbox" name="op1"> //より高精度な位置を求める<br>
-            maximumAge          : <input type="number" name="op2" style="width:50px;" value=0> // 最後の現在位置情報がこの値以内の場合は再利用(ms)<br>
-            timeout             : <input type="number" name="op3" style="width:50px;" value=5000> // この値以内に現在位置情報を取得出来ない場合は処理を終了(ms)<br>
+            <div>
+                <span class="col col-1">enableHighAccuracy</span>
+                <span class="col col-2">: <input type="checkbox" id="op1"></span>
+                <span class="col col-3">// より高精度な位置を求める</span>
+            </div>
+            <div>
+                <span class="col col-1">maximumAge</span>
+                <span class="col col-2">: <input type="number" id="op2" style="width:50px;" value=0></span>
+                <span class="col col-3">// 最後の現在位置情報がこの値以内の場合は再利用(ms)</span>
+            </div>
+            <div>
+                <span class="col col-1">timeout</span>
+                <span class="col col-2">: <input type="number" id="op3" style="width:50px;" value=5000></span>
+                <span class="col col-3">// この値以内に現在位置情報を取得出来ない場合は処理を終了(ms)</span>
+            </div>
         </fieldset>
         <button type="button" id="button" onclick="start()">start</button>
         <div id="msg" style="width:100%; height: 50px; overflow: scroll;">位置情報取得を停止中</div>
