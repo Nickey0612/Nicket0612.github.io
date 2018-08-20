@@ -17,7 +17,18 @@
             .col-3 {
                 width: 600px;
             }
-
+            #msg {
+                width: 100%;
+                height: 50px;
+            }
+            #data {
+                width: 100%;
+                height: 100px;
+            }
+            #op2,
+            #op3 {
+                width: 50px;
+            }
             #button{
                 display: inline-block;
                 padding: 0.5em 1em;
@@ -41,11 +52,17 @@
 
             var id;
 
+            /*
+            msg表示用
+            */
             function addMsg(_text) {
                 //let text = _text + "</br>";
                 document.getElementById("msg").textContent = _text;
             }
 
+            /*
+            startボタン押下時の処理
+            */
             function start() {
                 if(navigator.geolocation) {
                     addMsg("位置情報を取得中");
@@ -59,6 +76,9 @@
                 }
             }
 
+            /*
+            stopボタン押下時の処理
+            */
             function stop() {
                 addMsg("位置情報取得を停止中");
                 var element = document.getElementById("button");
@@ -68,6 +88,9 @@
                 gpsStop();
             }
 
+            /*
+            各種オプションを読み込み、watchPositionをスタートする
+            */
             function gpsStart() {
                 var op1 = document.getElementById("op1").checked;
                 var op2 = Number(document.getElementById("op2").value);
@@ -89,12 +112,18 @@
                 );
             }
 
+            /*
+            watchPositionを停止する
+            */
             function gpsStop() {
                 if(typeof id != "undefined") {
                     navigator.geolocation.clearWatch(id);
                 }
             }
 
+            /*
+            watchPositionが返したGPSデータを処理する
+            */
             function success(position) {
                 var time = position.timestamp;
                 var parseTime = unixTime2ymd(time);
@@ -114,6 +143,9 @@
                 element.innerHTML += "<hr>";
             }
 
+            /*
+            watchPositionが返したエラーをハンドリングする
+            */
             function err(error) {
                 var e = "";
                 if(error.code == 1) {
@@ -129,6 +161,9 @@
                 addMsg(e);
             }
 
+            /*
+            unixTimeをyyyy/MM/dd HH:mm:ss形式に変換する
+            */
             function unixTime2ymd(intTime){
                 var d = new Date( intTime);
                 var year  = d.getFullYear();
@@ -152,18 +187,18 @@
             </div>
             <div>
                 <span class="col col-1">maximumAge</span>
-                <span class="col col-2">: <input type="number" id="op2" style="width:50px;" value=0></span>
+                <span class="col col-2">: <input type="number" id="op2" value=0></span>
                 <span class="col col-3">// 指定時間(ms)内に取得した位置情報がある場合は再利用する</span>
             </div>
             <div>
                 <span class="col col-1">timeout</span>
-                <span class="col col-2">: <input type="number" id="op3" style="width:50px;" value=5000></span>
+                <span class="col col-2">: <input type="number" id="op3" value=5000></span>
                 <span class="col col-3">// 指定時間(ms)内に位置情報を取得出来ない場合は処理を終了する</span>
             </div>
         </fieldset>
         <button type="button" id="button" onclick="start()">start</button>
-        <div id="msg" style="width:100%; height: 50px; overflow: auto;">位置情報取得を停止中</div>
+        <div id="msg">位置情報取得を停止中</div>
         <hr>
-        <div id="data" style="width:100%; height: 100%; overflow: auto; "></div>
+        <div id="data"></div>
     </body>
 </html>
