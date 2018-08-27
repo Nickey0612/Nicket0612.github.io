@@ -37,7 +37,7 @@ $(function() {
     const videoSelect = $('#videoSource');
     const selectors = [audioSelect, videoSelect];
 
-    navigator.mediaDevices.enumerateDevice().then(deviceInfos => {
+    navigator.mediaDevices.enumerateDevices().then(deviceInfos => {
         const values = selectors.map(select => select.val() || '');
         selectors.forEach(select => {
             const children = select.children(':first');
