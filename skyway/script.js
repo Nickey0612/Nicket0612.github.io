@@ -17,6 +17,18 @@ $(function() {
         if(!roomName) {
             return;
         }
+        room = peer.joinRoom('sfu_video_' + roomName, {mode: 'sfu'});
+
+        $('#room-id').text(roomName);
+        step3(room);
+    });
+
+    $('#make-call-cam').on('submit', e => {
+        e.preventDefault();
+        const roomName = $('#join-room').val();
+        if(!roomName) {
+            return;
+        }
         room = peer.joinRoom('sfu_video_' + roomName, {mode: 'sfu', stream: localStream});
 
         $('#room-id').text(roomName);
@@ -119,7 +131,8 @@ $(function() {
 
         room.on('close', step2);
         room.on('peerLeave', peerId => {
-            $('.video_' + oeerId).remove();
+            console.log("peer(" + peerId + ") is leaved.");
+            //$('.video_' + oeerId).remove();
         });
         $('#step1, #step2').hide();
         $('#step3').show();
