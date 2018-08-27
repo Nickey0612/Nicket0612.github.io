@@ -29,7 +29,7 @@
             #op3 {
                 width: 50px;
             }
-            #button{
+            .button{
                 display: inline-block;
                 padding: 0.5em 1em;
                 margin: 5px;
@@ -41,11 +41,16 @@
                 border-radius: 3px;
                 font-size: initial;
             }
-            #button:active {
+            .button:active {
                 -ms-transform: translateY(4px);
                 -webkit-transform: translateY(4px);
                 transform: translateY(4px);
                 border-bottom: none;
+            }
+            .button:disabled {
+                background-image: none;
+                background-color: #ccc;
+                border-color: #ccc;
             }
         </style>
         <script>
@@ -66,11 +71,15 @@
             function start() {
                 if(navigator.geolocation) {
                     addMsg("位置情報を取得中");
-                    var element = document.getElementById("button");
+                    var element = document.getElementById("btn_start");
                     var event = function() { stop(); };
                     element.textContent = "stop";
                     element.onclick = event;
                     gpsStart();
+                    document.getElementById('btn_save').disabled = true;
+                    document.getElementById('op1').disabled = true;
+                    document.getElementById('op2').disabled = true;
+                    document.getElementById('op3').disabled = true;
                 }else{
                     addMsg("この端末では利用できません");
                 }
@@ -81,11 +90,17 @@
             */
             function stop() {
                 addMsg("位置情報取得を停止中");
-                var element = document.getElementById("button");
+                var element = document.getElementById("btn_start");
                 var event = function(){ start(); };
                 element.textContent = "start";
                 element.onclick = event;
                 gpsStop();
+                if(document.getElementById("data").innerText.length > 1){
+                    document.getElementById('btn_save').disabled = false;
+                    document.getElementById('op1').disabled = false;
+                    document.getElementById('op2').disabled = false;
+                    document.getElementById('op3').disabled = false;
+                }
             }
 
             /*
@@ -134,13 +149,15 @@
                 var speed = position.coords.speed;
 
                 var element = document.getElementById("data");
-                element.innerHTML += "datetime  : " + parseTime + "<br>";
-                element.innerHTML += "latitude  : " + lat + "<br>";
+                element.innerHTML += "datetime : " + parseTime + "<br>";
+                element.innerHTML += "latitude : " + lat + "<br>";
                 element.innerHTML += "longitude : " + lon + "<br>";
-                element.innerHTML += "altitude  : " + alt + "<br>";
-                element.innerHTML += "accuracy  : " + acc + "<br>";
-                element.innerHTML += "Speed     : " + speed + "<br>";
+                element.innerHTML += "altitude : " + alt + "<br>";
+                element.innerHTML += "accuracy : " + acc + "<br>";
+                element.innerHTML += "Speed : " + speed + "<br>";
                 element.innerHTML += "<hr>";
+
+                document.getElementById('btn_clear').disabled = false;
             }
 
             /*
@@ -175,9 +192,72 @@
                 return( year + "/" + month + "/" + day + " " + hour + ":" + min + ":" + sec );
             }
 
+            /*
+            div#dataの内容を消去する
+            */
+            function data_clear() {
+                console.log("clear");
+                document.getElementById('data').innerHTML = "";
+                document.getElementById('btn_clear').disabled = true;
+                document.getElementById('btn_save').disabled = true;
+            }
+
+            /*
+            div#dataの内容をファイルに保存する
+            */
+            function data_save() {
+                var tmp = document.getElementById("data").innerHTML;
+                var datas = tmp.split("<br>");
+                datas = datas.filter(function(a) {
+                    return a !== "<hr>";
+                });
+                var csv_array = [];
+
+                for(var i=0; i<datas.length/6; i++) {
+                    var obj = [];
+                    for(var n=0; n<6; n++){
+                        var data = datas[(i*6)+n].split(" : ");
+                        obj[n] = data[1];
+                    }
+                    csv_array[i] = obj;
+                }
+
+                var file_name = "data.csv";
+                var csv_string = "";
+
+                for(var x=0; x<csv_array.length; x++) {
+                    csv_string += csv_array[x].join(",");
+                    csv_string += "\r\n";
+                }
+
+                csv_string = "\ufffe" + csv_string;
+                console.log(csv_string);
+
+                var array = [];
+                for(var i=0; i<csv_string.length; i++) {
+                    array.push(csv_string.charCodeAt(i));
+                }
+                var csv_contents = new Uint16Array(array);
+
+                var blob = new Blob([csv_contents], {type: "text/csv;charset=utf-16;"});
+
+                if(window.navigator.msSaveOrOpenBlob) {
+                    navigator.msSaveBlob(blob, file_name);
+                }else{
+                    var downloadLink = document.createElement('a');
+                    downloadLink.setAttribute('href', window.URL.createObjectURL(blob));
+                    downloadLink.setAttribute('download', file_name);
+                    downloadLink.setAttribute('target', '_blank');
+
+                    document.getElementById('body').appendChild(downloadLink);
+                    downloadLink.click();
+                    downloadLink.remove();
+                }
+            }
+
         </script>
     </head>
-    <body>
+    <body id='body'>
         <fieldset>
             <legend>options</legend>
             <div>
@@ -196,7 +276,9 @@
                 <span class="col col-3">// 指定時間(ms)内に位置情報を取得出来ない場合は処理を終了する</span>
             </div>
         </fieldset>
-        <button type="button" id="button" onclick="start()">start</button>
+        <button type="button" class="button" id="btn_start" onclick="start()">start</button>
+        <button type="button" class="button" id="btn_clear" onclick="data_clear()" disabled>clear</button>
+        <button type="button" class="button" id="btn_save" onclick="data_save()" disabled>save</button>
         <div id="msg">位置情報取得を停止中</div>
         <hr>
         <div id="data"></div>
