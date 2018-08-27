@@ -10,7 +10,23 @@
     </head>
     <body>
         <div id="video-container">
-            <div id="their-videos"></div>
+            <label id="my-label"></label>
+            <div id="my-video" muted="true" autoplay playsinline></div>
+        </div>
+
+        <div class="select">
+            <label for="audioSource">Audio input source: </label><select id="audioSource"></select>
+        </div>
+        <div class="select">
+            <label for="videoSource">Video source: </label><select id="videoSource"></select>
+        </div>
+
+        <div id="step1">
+            <p>Please click `allow` on the top of the screen so we can access your webcam and microphone for calls.</p>
+            <div id="step1-error">
+                <p>Failed to access the webcam and microphone. Make sure to run this demo on an http server and click allow when asked for permission by the browser.</p>
+                <a href="#" class="pure-button pure-button-error" id="step1-retry">Try again</a>
+            </div>
         </div>
 
         <div id="step2">
