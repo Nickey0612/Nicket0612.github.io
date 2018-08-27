@@ -4,6 +4,7 @@ $(function() {
         debug: 3,
     });
 
+    let page = window.location.href.split('/').pop();
     let localStream;
     let room;
     peer.on('open', () => {
@@ -17,19 +18,12 @@ $(function() {
         if(!roomName) {
             return;
         }
-        room = peer.joinRoom('sfu_video_' + roomName, {mode: 'sfu'});
 
-        $('#room-id').text(roomName);
-        step3(room);
-    });
-
-    $('#make-call-cam').on('submit', e => {
-        e.preventDefault();
-        const roomName = $('#join-room').val();
-        if(!roomName) {
-            return;
+        if(page === "camera.html") {
+            room = peer.joinRoom('sfu_video_' + roomName, {mode: 'sfu', stream: localStream});
+        } else {
+            room = peer.joinRoom('sfu_video_' + roomName, {mode: 'sfu'});
         }
-        room = peer.joinRoom('sfu_video_' + roomName, {mode: 'sfu', stream: localStream});
 
         $('#room-id').text(roomName);
         step3(room);
@@ -84,6 +78,10 @@ $(function() {
     });
 
     function step1() {
+        if(page != "camera.html") {
+            step2();
+        }
+
         const audioSource = $('#audioSource').val();
         const videoSource = $('#videoSource').val();
         const constraints = {
@@ -108,8 +106,12 @@ $(function() {
     }
 
     function step2() {
-        $('#their-videos').empty();
-        $('#step1, #step3').hide();
+        if(page == "camera.html") {
+            $('#step1, #step3').hide();
+        }else{
+            $('#their-videos').empty();
+            $('#step3').hide();
+        }
         $('#step2').show();
         $('#join-room').focus();
     }
