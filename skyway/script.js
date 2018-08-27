@@ -80,6 +80,7 @@ $(function() {
     function step1() {
         if(page != "camera.html") {
             step2();
+            return;
         }
 
         const audioSource = $('#audioSource').val();
