@@ -6,7 +6,7 @@ $(function() {
 
     let localStream;
     let room;
-    peer.on('open'. () => {
+    peer.on('open', () => {
         $('#my-id').text(peer.id);
         step1();
     });
