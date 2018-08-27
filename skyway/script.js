@@ -17,7 +17,7 @@ $(function() {
         if(!roomName) {
             return;
         }
-        room = peer.joinRoom('sfu_video_' + roomName, {mode: 'sfu'. stream: localStream});
+        room = peer.joinRoom('sfu_video_' + roomName, {mode: 'sfu', stream: localStream});
 
         $('#room-id').text(roomName);
         step3(room);
