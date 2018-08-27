@@ -21,7 +21,7 @@
 
 #my-video {
     margin-top: 15px;
-    width: 100%;
+    width: 280px;
     height: auto;
     background-color: #eee;
 }
@@ -36,6 +36,10 @@
 #video-container {
     padding: 25px;
     text-align: center;
+}
+
+#step1-error, #step2, #step3 {
+    display: none;
 }
 
 #my-id {
