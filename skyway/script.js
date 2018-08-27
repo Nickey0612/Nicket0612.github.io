@@ -31,7 +31,7 @@ $(function() {
     $('#step1-retry').on('click', () => {
         $('#step1-error').hide();
         step1();
-    }
+    });
 
     const audioSelect = $('#audioSource');
     const videoSelect = $('#videoSource');
@@ -114,7 +114,7 @@ $(function() {
                 '</div>'));
             const el = $('#' + id).find('video').get(0);
             el.srcObject = stream;
-            e;.play();
+            el.play();
         });
 
         room.on('close', step2);
