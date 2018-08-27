@@ -5,6 +5,10 @@ $(function() {
     });
 
     let page = window.location.href.split('/').pop();
+    if(page == "camera.html#") {
+        page = "camera.html";
+    }
+
     let localStream;
     let room;
     peer.on('open', () => {
@@ -19,7 +23,7 @@ $(function() {
             return;
         }
 
-        if(page === "camera.html") {
+        if(page == "camera.html") {
             room = peer.joinRoom('sfu_video_' + roomName, {mode: 'sfu', stream: localStream});
         } else {
             room = peer.joinRoom('sfu_video_' + roomName, {mode: 'sfu'});
@@ -39,7 +43,7 @@ $(function() {
         step1();
     });
 
-    if(page === "camera.html") {
+    if(page == "camera.html") {
         const audioSelect = $('#audioSource');
         const videoSelect = $('#videoSource');
         const selectors = [audioSelect, videoSelect];
