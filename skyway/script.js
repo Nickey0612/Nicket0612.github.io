@@ -165,7 +165,7 @@ $(function() {
     }
 
     function dummyRoomJoin() {
-        return new Promsie((resolve, reject) => {
+        return new Promise((resolve, reject) => {
             const dummyPeer = new Peer({key: key});
             dummyPeer.on('open', () => {
                 const dummyRoom = dummyPeer.joinRoom('roomName', {mode: Mode});
