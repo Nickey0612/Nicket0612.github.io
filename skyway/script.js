@@ -1,6 +1,8 @@
 $(function() {
+    const Key = window.__SKYWAY_KEY__;
+    const Mode = 'sfu';
     const peer = new Peer({
-        key: window.__SKYWAY_KEY__,
+        key: Key,
         debug: 3,
     });
 
@@ -24,9 +26,9 @@ $(function() {
         }
 
         if(page == "camera.html") {
-            room = peer.joinRoom('sfu_video_' + roomName, {mode: 'sfu', stream: localStream});
+            room = peer.joinRoom('sfu_video_' + roomName, {mode: Mode, stream: localStream});
         } else {
-            room = peer.joinRoom('sfu_video_' + roomName, {mode: 'sfu'});
+            room = peer.joinRoom('sfu_video_' + roomName, {mode: Mode});
         }
 
         $('#room-id').text(roomName);
@@ -83,6 +85,7 @@ $(function() {
         });
     }
 
+    // camera.htmlのみ
     function step1() {
         if(page != "camera.html") {
             step2();
@@ -124,18 +127,28 @@ $(function() {
     }
 
     function step3() {
-        room.on('stream', stream => {
-            const peerId = stream.peerId;
-            const id = 'video_' + peerId + '_' + stream.id.replace('{', '').replace('}', '');
+        room.on('open', async(peerId) => {
+            try {
+                await dummyRoomJoin();
+            } catch (err) {
+                console.error(err);
+            }
+        });
 
-            $('#their-videos').append($(
-                '<div class="video_' + peerId + '" id="' + id + '">' +
-                '<label>' + stream.peerId + ':' + stream.id + '</label>' +
-                '<video class="remoteVideos" autoplay playsinline>' +
-                '</div>'));
-            const el = $('#' + id).find('video').get(0);
-            el.srcObject = stream;
-            el.play();
+        room.on('stream', stream => {
+            if(page != "camera.html") {
+                const peerId = stream.peerId;
+                const id = 'video_' + peerId + '_' + stream.id.replace('{', '').replace('}', '');
+
+                $('#their-videos').append($(
+                    '<div class="video_' + peerId + '" id="' + id + '">' +
+                    '<label>' + stream.peerId + ':' + stream.id + '</label>' +
+                    '<video class="remoteVideos" autoplay playsinline>' +
+                    '</div>'));
+                const el = $('#' + id).find('video').get(0);
+                el.srcObject = stream;
+                el.play();
+            }
         });
 
         room.on('close', step2);
@@ -143,7 +156,30 @@ $(function() {
             console.log("peer(" + peerId + ") is leaved.");
             //$('.video_' + oeerId).remove();
         });
-        $('#step1, #step2').hide();
+
+        if(page == "camera.html") {
+            $('#step1').hide();
+        }
+        $('#step2').hide();
         $('#step3').show();
     }
+
+    function dummyRoomJoin() {
+        return new Promsie((resolve, reject) => {
+            const dummyPeer = new Peer({key: key});
+            dummyPeer.on('open', () => {
+                const dummyRoom = dummyPeer.joinRoom('roomName', {mode: Mode});
+                dummyRoom.on('open', () => {
+                    dummyRoom.close();
+                });
+                dummyRoom.on('close', () => {
+                    dummyPeer.destroy();
+                    resolve();
+                });
+                dummyRoom.on('error', (err) => {
+                    reject(err);
+                });
+            });
+        });
+    };
 });
