@@ -2,7 +2,7 @@ $(function() {
     const Key = window.__SKYWAY_KEY__;
     const Mode = 'sfu';
     const peer = new Peer({
-        key: Key,
+        key: window.__SKYWAY_KEY__,
         debug: 3,
     });
 
@@ -166,7 +166,7 @@ $(function() {
 
     function dummyRoomJoin() {
         return new Promise((resolve, reject) => {
-            const dummyPeer = new Peer({key: key});
+            const dummyPeer = new Peer({key: Key});
             dummyPeer.on('open', () => {
                 const dummyRoom = dummyPeer.joinRoom('roomName', {mode: Mode});
                 dummyRoom.on('open', () => {
